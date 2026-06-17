@@ -133,7 +133,6 @@ interface RecursoGaleria {
   `]
 })
 export class GaleriaComponent {
-  // Enlaces de imágenes de alta calidad (Unsplash) para demostrar el slider
   recursos: RecursoGaleria[] = [
     {
       titulo: 'Tortugas Gigantes',
@@ -200,24 +199,22 @@ export class GaleriaComponent {
     },
   ];
 
-  // Estado del Modal y el Slider
   itemActivo: RecursoGaleria | null = null;
   imagenActivaIndex: number = 0;
 
   abrirModal(item: RecursoGaleria) {
     this.itemActivo = item;
-    this.imagenActivaIndex = 0; // Siempre inicia en la primera imagen del animal seleccionado
-    document.body.style.overflow = 'hidden'; // Evita que la página del fondo haga scroll
+    this.imagenActivaIndex = 0;
+    document.body.style.overflow = 'hidden';
   }
 
   cerrarModal() {
     this.itemActivo = null;
-    document.body.style.overflow = 'auto'; // Restaura el scroll
+    document.body.style.overflow = 'auto';
   }
 
-  // Controles del Slider
   siguienteImagen(event: Event) {
-    event.stopPropagation(); // Evita que se cierre el modal al hacer click en el botón
+    event.stopPropagation();
     if (this.itemActivo) {
       this.imagenActivaIndex = (this.imagenActivaIndex + 1) % this.itemActivo.imagenes.length;
     }

@@ -11,12 +11,12 @@ import { InicioComponent } from './pages/inicio/inicio';
 export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
   { path: 'simulador', component: SimuladorComponent },
-  { path: 'respeto', component: NormativasComponent }, // Según tu ERS, la ruta es "respeto"
+  { path: 'respeto', component: NormativasComponent },
   { path: 'galeria', component: GaleriaComponent },
   { path: 'mapa', component: MapaComponent },
   { path: 'ruta', component: RutaComponent },
   { path: 'chatbot', component: ChatbotComponent },
   { path: 'frases', component: FrasesComponent },
-  { path: '', redirectTo: '/mapa', pathMatch: 'full' }, // Redirige al mapa por defecto
-  { path: '**', redirectTo: '/mapa' } // Manejo de rutas no encontradas
+  { path: '', redirectTo: '/mapa', pathMatch: 'full' },
+  { path: '**', redirectTo: '/mapa' }
 ];

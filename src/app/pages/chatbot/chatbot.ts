@@ -138,7 +138,6 @@ export class ChatbotComponent implements AfterViewChecked {
   isTyping = false; // Bandera de seguridad principal
 
   constructor(private datePipe: DatePipe) {
-    // Mensaje inicial de bienvenida
     this.mensajes.push({ 
       emisor: 'bot', 
       texto: '¡Hola! Soy GalapaBot 🐢. Estoy aquí para guiarte en tu aventura promoviendo el Buen Vivir. ¿Sobre qué te gustaría aprender hoy?', 
@@ -146,7 +145,6 @@ export class ChatbotComponent implements AfterViewChecked {
     });
   }
 
-  // Se ejecuta después de cada cambio en la vista para bajar el scroll
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
@@ -169,22 +167,19 @@ export class ChatbotComponent implements AfterViewChecked {
   enviarMensaje() {
     if (this.isTyping || !this.mensajeActual.trim()) return;
 
-    // 1. Bloqueamos input y agregamos mensaje del usuario
     const consultaUsuario = this.mensajeActual;
     this.mensajes.push({ emisor: 'user', texto: consultaUsuario, hora: this.obtenerHoraActual() });
     this.mensajeActual = '';
-    this.isTyping = true; // Activa la animación "Escribiendo..."
+    this.isTyping = true;
 
-    // 2. Simulamos el tiempo de respuesta del servidor (1.5 segundos)
     setTimeout(() => {
       const respuesta = this.generarRespuestaBot(consultaUsuario.toLowerCase());
       
-      this.isTyping = false; // Oculta animación
+      this.isTyping = false;
       this.mensajes.push({ emisor: 'bot', texto: respuesta, hora: this.obtenerHoraActual() });
     }, 1500);
   }
 
-  // Motor de respuestas lógico (Basado en el ERS y reglas oficiales)
   generarRespuestaBot(consulta: string): string {
     if (consulta.includes('fauna') || consulta.includes('animal') || consulta.includes('tortuga') || consulta.includes('lobo') || consulta.includes('iguana')) {
       return 'En Galápagos encontrarás especies endémicas increíbles. La regla de oro es: mantén siempre una distancia mínima de 2 metros con cualquier animal y por ningún motivo intentes alimentarlos o tocarlos.';
@@ -205,7 +200,6 @@ export class ChatbotComponent implements AfterViewChecked {
       return 'Trae ropa ligera, zapatos cómodos para caminatas sobre rocas volcánicas, tu propia botella de agua reutilizable (para no generar plástico) y protector solar amigable con los arrecifes.';
     }
     else {
-      // Respuesta de fallback si no entiende
       return 'Es una excelente pregunta. Te recomiendo visitar nuestro Mapa Interactivo o realizar la Ruta del Buen Vivir en el menú superior para descubrir todos los detalles precisos sobre tu consulta.';
     }
   }

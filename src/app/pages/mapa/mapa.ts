@@ -167,7 +167,6 @@ export class MapaComponent implements AfterViewInit {
   private map!: L.Map;
   islaSeleccionada: InfoIsla | null = null;
 
-  // Inyectamos ChangeDetectorRef para asegurar que Angular detecte los clicks de Leaflet
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
@@ -175,7 +174,6 @@ export class MapaComponent implements AfterViewInit {
     this.inicializarMapa();
   }
 
-  // 2. Agregamos las islas más importantes con la data estructurada
   private inicializarMapa(): void {
     this.map = L.map('map').setView([-0.5, -90.5], 7);
 
@@ -191,7 +189,6 @@ export class MapaComponent implements AfterViewInit {
         lat: -0.6301, 
         lng: -90.3638, 
         desc: '',
-        // Data replicada exactamente de tus imágenes de diseño
         costumbres: ['Centro cultural y comercial del archipiélago', 'Comunidad pesquera tradicional', 'Puerto Ayora: punto de encuentro multicultural'],
         comida: ['Encebollado de pescado', 'Ceviche de langosta', 'Bolones de verde', 'Tigrillo'],
         fauna: [{icono: '🐢', texto: 'Tortugas gigantes en El Chato'}, {icono: '🦎', texto: 'Iguanas terrestres'}, {icono: '🦭', texto: 'Lobos marinos en la bahía'}],
@@ -257,7 +254,6 @@ export class MapaComponent implements AfterViewInit {
     puntosDeInteres.forEach(punto => {
       const marcador = L.marker([punto.lat, punto.lng]).addTo(this.map);
       
-      // En lugar de bindPopup, escuchamos el click para abrir el modal
       marcador.on('click', () => {
         this.abrirModal(punto);
       });
@@ -266,7 +262,7 @@ export class MapaComponent implements AfterViewInit {
 
   abrirModal(isla: InfoIsla) {
     this.islaSeleccionada = isla;
-    this.cdr.detectChanges(); // Forzamos la detección de cambios en Angular
+    this.cdr.detectChanges();
   }
 
   cerrarModal() {

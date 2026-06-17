@@ -98,7 +98,6 @@ interface Frase {
     .frase-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.8rem; }
     .palabra-local { color: #0f766e; font-size: 1.4rem; margin: 0; font-weight: 700; }
     
-    /* Botón de Audio interactivo */
     .btn-audio { background: #f0fdfa; border: 1px solid #ccfbf1; font-size: 1.2rem; cursor: pointer; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .btn-audio:hover { background: #ccfbf1; transform: scale(1.1); box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15); }
     .btn-audio:active { transform: scale(0.95); }
@@ -160,33 +159,24 @@ export class FrasesComponent {
     this.categoriaActual = categoria;
   }
 
-  // --- LÓGICA DE TEXT-TO-SPEECH (NATIVA DEL NAVEGADOR) ---
   reproducirAudio(texto: string) {
-    // Verificamos si el navegador soporta síntesis de voz
     if ('speechSynthesis' in window) {
-      // Limpiamos cualquier audio que se esté reproduciendo
       window.speechSynthesis.cancel();
-
-      // Creamos la "voz" con el texto a pronunciar
       const utterance = new SpeechSynthesisUtterance(texto);
       
-      // Configuramos el idioma para español 
-      utterance.lang = 'es-EC'; // Intenta usar español de Ecuador
-      utterance.rate = 0.9;     // Velocidad ligeramente más lenta para que sea claro
-      utterance.pitch = 1;      // Tono normal
+      utterance.lang = 'es-EC';
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
 
-      // En algunos navegadores (como Chrome) si 'es-EC' no existe, falla silenciosamente.
-      // Así que buscamos una voz en español disponible:
       const voices = window.speechSynthesis.getVoices();
       const spanishVoice = voices.find(voice => voice.lang.startsWith('es'));
       if (spanishVoice) {
         utterance.voice = spanishVoice;
       }
 
-      // Reproducimos
       window.speechSynthesis.speak(utterance);
     } else {
-      alert("Tu navegador no soporta la reproducción de audio nativa.");
+      alert("Tu navegador no soporta la reproducción de audio.");
     }
   }
 }

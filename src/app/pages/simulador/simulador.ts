@@ -194,14 +194,13 @@ interface Pregunta {
   `]
 })
 export class SimuladorComponent {
-  estado: string = 'inicio'; // 'inicio' | 'jugando' | 'resultados'
+  estado: string = 'inicio';
   
   indiceActual = 0;
   puntajeTotal = 0;
   indiceOpcionSeleccionada: number | null = null;
   mostrandoFeedback: boolean = false;
 
-  // Las 10 preguntas basadas estrictamente en las reglas de Galápagos
   preguntas: Pregunta[] = [
     {
       titulo: 'Encuentro con Tortugas Marinas',
@@ -305,7 +304,6 @@ export class SimuladorComponent {
     }
   ];
 
-  // Cálculo de Progreso
   get porcentajeProgreso(): number {
     if (this.estado === 'inicio') return 0;
     return Math.round((this.indiceActual / this.preguntas.length) * 100);
@@ -315,7 +313,6 @@ export class SimuladorComponent {
     return this.preguntas[this.indiceActual];
   }
 
-  // Interacciones
   iniciarSimulador() {
     this.estado = 'jugando';
     this.indiceActual = 0;
@@ -325,7 +322,7 @@ export class SimuladorComponent {
   }
 
   seleccionarOpcion(index: number) {
-    if (this.mostrandoFeedback) return; // Bloquear cambios si ya se evalúa
+    if (this.mostrandoFeedback) return;
     this.indiceOpcionSeleccionada = index;
   }
 
@@ -333,12 +330,10 @@ export class SimuladorComponent {
     if (this.indiceOpcionSeleccionada === null) return;
 
     if (!this.mostrandoFeedback) {
-      // Paso 1: El usuario presiona "Comprobar"
       this.mostrandoFeedback = true;
       const puntos = this.preguntaActual.opciones[this.indiceOpcionSeleccionada].puntos;
       this.puntajeTotal += puntos;
     } else {
-      // Paso 2: El usuario presiona "Siguiente" tras ver el feedback
       if (this.indiceActual < this.preguntas.length - 1) {
         this.indiceActual++;
         this.indiceOpcionSeleccionada = null;
@@ -349,16 +344,14 @@ export class SimuladorComponent {
     }
   }
 
-  // Clases dinámicas para la UI durante el feedback
   obtenerClaseOpcion(indice: number, puntos: number): string {
     if (!this.mostrandoFeedback) {
       return this.indiceOpcionSeleccionada === indice ? 'seleccionada' : '';
     }
     
-    // Si estamos mostrando feedback
-    if (puntos === 10) return 'es-correcta'; // Siempre resaltamos la correcta
-    if (this.indiceOpcionSeleccionada === indice && puntos !== 10) return 'es-incorrecta'; // Resaltamos el error
-    return 'opacada'; // Las demás opciones se opacan
+    if (puntos === 10) return 'es-correcta';
+    if (this.indiceOpcionSeleccionada === indice && puntos !== 10) return 'es-incorrecta';
+    return 'opacada';
   }
 
   esRespuestaCorrecta(): boolean {
@@ -366,14 +359,13 @@ export class SimuladorComponent {
     return this.preguntaActual.opciones[this.indiceOpcionSeleccionada].puntos === 10;
   }
 
-  // Resultados
   get porcentajeFinal(): number {
     const maxPuntos = this.preguntas.length * 10;
     return Math.round((this.puntajeTotal / maxPuntos) * 100);
   }
 
   get esNivelAlto(): boolean {
-    return this.porcentajeFinal >= 80; // Aumentamos el estándar al ser 10 preguntas
+    return this.porcentajeFinal >= 80;
   }
 
   get feedbackFinal(): string {

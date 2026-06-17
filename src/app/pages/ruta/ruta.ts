@@ -156,7 +156,6 @@ interface EtapaRuta {
   `]
 })
 export class RutaComponent implements OnInit {
-  // Datos reales estructurados según la filosofía del Buen Vivir
   etapas: EtapaRuta[] = [
     {
       id: 1,
@@ -224,7 +223,6 @@ export class RutaComponent implements OnInit {
     this.totalAcciones = this.etapas.reduce((total, etapa) => total + etapa.acciones.length, 0);
   }
 
-  // Lógica de progreso
   get accionesCompletadas(): number {
     return this.etapas.reduce((total, etapa) => {
       return total + etapa.acciones.filter(a => a.completada).length;
@@ -236,7 +234,6 @@ export class RutaComponent implements OnInit {
     return Math.round((this.accionesCompletadas / this.totalAcciones) * 100);
   }
 
-  // Genera dinámicamente el gradiente circular para el dashboard
   gradienteProgreso(): string {
     const porcentaje = this.porcentajeTotal;
     return `conic-gradient(#14b8a6 ${porcentaje}%, rgba(255,255,255,0.2) ${porcentaje}%)`;
