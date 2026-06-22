@@ -17,7 +17,6 @@ interface Frase {
     <div class="frases-wrapper">
       
       <div class="hero-header slide-down">
-        <div class="icono-gigante">🗣️</div>
         <h2>Diccionario Cultural Ecuatoriano</h2>
         <p>Aprende las expresiones locales que te ayudarán a conectar con la comunidad de Galápagos y enriquecer tu experiencia de viaje.</p>
       </div>

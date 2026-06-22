@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RutaComponent } from './ruta';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('RutaComponent', () => {
   let component: RutaComponent;

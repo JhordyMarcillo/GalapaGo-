@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NormativasComponent } from './normativas';
 import { ActivatedRoute } from '@angular/router';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('NormativasComponent', () => {
   let component: NormativasComponent;

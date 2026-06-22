@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InicioComponent } from './inicio';
 import { provideRouter } from '@angular/router'; // <-- Importar el proveedor de rutas
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('InicioComponent', () => {
   let component: InicioComponent;
