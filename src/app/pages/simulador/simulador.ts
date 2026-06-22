@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 interface Opcion {
   texto: string;
@@ -16,27 +17,27 @@ interface Pregunta {
 @Component({
   selector: 'app-simulador',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="simulador-wrapper">
       
       <div class="premium-card text-center slide-in" *ngIf="estado === 'inicio'">
         <div class="icono-gigante">🐢</div>
-        <h2 class="titulo-premium">Simulador de Turismo Responsable</h2>
-        <p class="subtitulo">Mide tu nivel de concienciación ambiental y descubre cómo tus decisiones impactan en el ecosistema sensible de Galápagos.</p>
+        <h2 class="titulo-premium">{{ 'Simulador de Turismo Responsable' | translate }}</h2>
+        <p class="subtitulo">{{ 'Mide tu nivel de concienciación ambiental y descubre cómo tus decisiones impactan en el ecosistema sensible de Galápagos.' | translate }}</p>
         
         <div class="info-badges">
-          <span class="badge">⏱️ 5 Minutos</span>
-          <span class="badge">🎯 {{ preguntas.length }} Escenarios</span>
+          <span class="badge">⏱️ {{ '5 Minutos' | translate }}</span>
+          <span class="badge">🎯 {{ preguntas.length }} {{ 'Escenarios' | translate }}</span>
         </div>
         
-        <button class="btn-premium btn-block" (click)="iniciarSimulador()">Comenzar Simulación</button>
+        <button class="btn-premium btn-block" (click)="iniciarSimulador()">{{ 'Comenzar Simulación' | translate }}</button>
       </div>
 
       <div class="premium-card slide-in" *ngIf="estado === 'jugando'">
         
         <div class="progreso-header">
-          <span class="progreso-texto">Escenario {{ indiceActual + 1 }} de {{ preguntas.length }}</span>
+          <span class="progreso-texto">{{ 'Escenario' | translate }} {{ indiceActual + 1 }} {{ 'de' | translate }} {{ preguntas.length }}</span>
           <span class="progreso-porcentaje">{{ porcentajeProgreso }}%</span>
         </div>
         <div class="progreso-barra-bg">
@@ -44,8 +45,8 @@ interface Pregunta {
         </div>
 
         <div class="pregunta-container">
-          <h3 class="pregunta-titulo">{{ preguntaActual.titulo }}</h3>
-          <p class="pregunta-contexto">{{ preguntaActual.contexto }}</p>
+          <h3 class="pregunta-titulo">{{ preguntaActual.titulo | translate }}</h3>
+          <p class="pregunta-contexto">{{ preguntaActual.contexto | translate }}</p>
           
           <div class="opciones-grid" [ngClass]="{'bloqueado': mostrandoFeedback}">
             <div class="opcion-card" 
@@ -58,16 +59,16 @@ interface Pregunta {
                 <span class="feedback-icon check" *ngIf="mostrandoFeedback && op.puntos === 10">✓</span>
                 <span class="feedback-icon cross" *ngIf="mostrandoFeedback && indiceOpcionSeleccionada === i && op.puntos !== 10">✗</span>
               </div>
-              <p>{{ op.texto }}</p>
+              <p>{{ op.texto | translate }}</p>
             </div>
           </div>
 
           <div class="feedback-in-game slide-down" *ngIf="mostrandoFeedback" 
                [ngClass]="esRespuestaCorrecta() ? 'feedback-exito' : 'feedback-error'">
             <h4 class="feedback-titulo">
-              {{ esRespuestaCorrecta() ? '¡Respuesta correcta!' : 'Respuesta incorrecta' }}
+              {{ (esRespuestaCorrecta() ? '¡Respuesta correcta!' : 'Respuesta incorrecta') | translate }}
             </h4>
-            <p>{{ preguntaActual.explicacion }}</p>
+            <p>{{ preguntaActual.explicacion | translate }}</p>
           </div>
         </div>
 
@@ -75,8 +76,8 @@ interface Pregunta {
           <button class="btn-premium" 
                   [disabled]="indiceOpcionSeleccionada === null"
                   (click)="manejarAccionBoton()">
-            <span *ngIf="!mostrandoFeedback">Comprobar Respuesta</span>
-            <span *ngIf="mostrandoFeedback">{{ indiceActual === preguntas.length - 1 ? 'Ver Resultados' : 'Siguiente Escenario ➔' }}</span>
+            <span *ngIf="!mostrandoFeedback">{{ 'Comprobar Respuesta' | translate }}</span>
+            <span *ngIf="mostrandoFeedback">{{ (indiceActual === preguntas.length - 1 ? 'Ver Resultados' : 'Siguiente Escenario ➔') | translate }}</span>
           </button>
         </div>
       </div>
@@ -92,14 +93,26 @@ interface Pregunta {
         </div>
 
         <h2 class="titulo-resultado" [ngClass]="esNivelAlto ? 'texto-exito' : 'texto-alerta'">
-          {{ esNivelAlto ? '¡Nivel Alto de Concienciación!' : 'Nivel Básico de Concienciación' }}
+          {{ (esNivelAlto ? '¡Nivel Alto de Concienciación!' : 'Nivel Básico de Concienciación') | translate }}
         </h2>
         
         <div class="feedback-box" [ngClass]="esNivelAlto ? 'box-exito' : 'box-alerta'">
-          <p>{{ feedbackFinal }}</p>
+          <p>{{ feedbackFinal | translate }}</p>
         </div>
 
-        <button class="btn-secundario mt-2" (click)="reiniciar()">Volver a intentar</button>
+        <div class="resumen-respuestas">
+          <h3 class="resumen-titulo">{{ 'Resumen de tus respuestas' | translate }}</h3>
+          <div class="resumen-item" *ngFor="let pregunta of preguntas; let i = index">
+            <div class="resumen-header">
+              <span class="resumen-icono" [ngClass]="esRespuestaCorrectaEnIndice(i) ? 'icono-correcto' : 'icono-incorrecto'">{{ esRespuestaCorrectaEnIndice(i) ? '✓' : '✗' }}</span>
+              <strong>{{ pregunta.titulo | translate }}</strong>
+            </div>
+            <p class="resumen-tu-respuesta">{{ 'Tu respuesta:' | translate }} {{ pregunta.opciones[respuestasUsuario[i]].texto | translate }}</p>
+            <p class="resumen-explicacion">{{ pregunta.explicacion | translate }}</p>
+          </div>
+        </div>
+
+        <button class="btn-secundario mt-2" (click)="reiniciar()">{{ 'Volver a intentar' | translate }}</button>
       </div>
 
     </div>
@@ -191,6 +204,17 @@ interface Pregunta {
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+    /* Resumen de respuestas */
+    .resumen-respuestas { text-align: left; margin-top: 2rem; border-top: 1px solid #e2e8f0; padding-top: 2rem; }
+    .resumen-titulo { color: #1e293b; font-size: 1.3rem; margin: 0 0 1.5rem 0; }
+    .resumen-item { padding: 1.2rem; border-radius: 12px; border: 1px solid #f1f5f9; margin-bottom: 1rem; background: #fafafa; }
+    .resumen-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; font-size: 1.05rem; }
+    .resumen-icono { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; flex-shrink: 0; }
+    .icono-correcto { background: #d1fae5; color: #059669; }
+    .icono-incorrecto { background: #fee2e2; color: #dc2626; }
+    .resumen-tu-respuesta { color: #475569; font-size: 0.95rem; margin: 0.3rem 0; padding-left: 2.2rem; }
+    .resumen-explicacion { color: #64748b; font-size: 0.9rem; margin: 0.3rem 0; padding-left: 2.2rem; font-style: italic; }
   `]
 })
 export class SimuladorComponent {
@@ -200,6 +224,7 @@ export class SimuladorComponent {
   puntajeTotal = 0;
   indiceOpcionSeleccionada: number | null = null;
   mostrandoFeedback: boolean = false;
+  respuestasUsuario: number[] = [];
 
   preguntas: Pregunta[] = [
     {
@@ -319,6 +344,7 @@ export class SimuladorComponent {
     this.puntajeTotal = 0;
     this.indiceOpcionSeleccionada = null;
     this.mostrandoFeedback = false;
+    this.respuestasUsuario = [];
   }
 
   seleccionarOpcion(index: number) {
@@ -333,6 +359,7 @@ export class SimuladorComponent {
       this.mostrandoFeedback = true;
       const puntos = this.preguntaActual.opciones[this.indiceOpcionSeleccionada].puntos;
       this.puntajeTotal += puntos;
+      this.respuestasUsuario.push(this.indiceOpcionSeleccionada);
     } else {
       if (this.indiceActual < this.preguntas.length - 1) {
         this.indiceActual++;
@@ -357,6 +384,11 @@ export class SimuladorComponent {
   esRespuestaCorrecta(): boolean {
     if (this.indiceOpcionSeleccionada === null) return false;
     return this.preguntaActual.opciones[this.indiceOpcionSeleccionada].puntos === 10;
+  }
+
+  esRespuestaCorrectaEnIndice(indice: number): boolean {
+    if (indice >= this.respuestasUsuario.length) return false;
+    return this.preguntas[indice].opciones[this.respuestasUsuario[indice]].puntos === 10;
   }
 
   get porcentajeFinal(): number {

@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslatePipe } from './core/pipes/translate.pipe';
+import { TranslationService, Language } from './core/services/translation.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <header class="navbar">
       <div class="nav-container">
@@ -20,15 +22,26 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
         </button>
 
         <nav class="nav-links" [class.abierto]="menuAbierto">
-          <a routerLink="/mapa" routerLinkActive="active" (click)="cerrarMenu()">Mapa Cultural</a>
-          <a routerLink="/respeto" routerLinkActive="active" (click)="cerrarMenu()">Respeta la Cultura</a>
-          <a routerLink="/frases" routerLinkActive="active" (click)="cerrarMenu()">Frases Locales</a>
-          <a routerLink="/simulador" routerLinkActive="active" (click)="cerrarMenu()">Simulador</a>
-          <a routerLink="/galeria" routerLinkActive="active" (click)="cerrarMenu()">Galería</a>
-          <a routerLink="/ruta" routerLinkActive="active" (click)="cerrarMenu()">Ruta del Buen Vivir</a>
-          <a routerLink="/chatbot" routerLinkActive="active" (click)="cerrarMenu()">Asistente</a>
+          <a routerLink="/mapa" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Mapa Cultural' | translate }}</a>
+          <a routerLink="/respeto" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Respeta la Cultura' | translate }}</a>
+          <a routerLink="/frases" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Frases Locales' | translate }}</a>
+          <a routerLink="/simulador" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Simulador' | translate }}</a>
+          <a routerLink="/galeria" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Galería' | translate }}</a>
+          <a routerLink="/ruta" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Ruta del Buen Vivir' | translate }}</a>
+          <a routerLink="/chatbot" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Asistente' | translate }}</a>
           
+          <div class="nav-actions-mobile">
+            <button class="btn-lang" (click)="toggleLang()">
+              {{ currentLang === 'es' ? '🇺🇸 Switch to English' : '🇪🇸 Cambiar a Español' }}
+            </button>
+          </div>
         </nav>
+
+        <div class="nav-actions-desktop">
+          <button class="btn-lang" (click)="toggleLang()">
+            {{ currentLang === 'es' ? '🇺🇸 EN' : '🇪🇸 ES' }}
+          </button>
+        </div>
 
       </div>
     </header>
@@ -132,8 +145,17 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   menuAbierto = false;
+  currentLang: Language = 'es';
+
+  constructor(private translationService: TranslationService) {}
+
+  ngOnInit() {
+    this.translationService.currentLanguage$.subscribe(lang => {
+      this.currentLang = lang;
+    });
+  }
 
   toggleMenu() {
     this.menuAbierto = !this.menuAbierto;
@@ -141,5 +163,10 @@ export class AppComponent {
 
   cerrarMenu() {
     this.menuAbierto = false;
+  }
+
+  toggleLang() {
+    this.translationService.toggleLanguage();
+    this.cerrarMenu(); // Opcional: cierra el menú móvil si estaba abierto
   }
 }

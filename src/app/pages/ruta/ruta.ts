@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 interface Accion {
   texto: string;
@@ -17,14 +18,14 @@ interface EtapaRuta {
 @Component({
   selector: 'app-ruta',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="ruta-wrapper">
       
       <div class="hero-ruta slide-down">
         <div class="hero-content">
-          <h2>Tu Ruta Sostenible</h2>
-          <p>Sigue esta guía paso a paso para asegurar que tu visita a Galápagos genere un impacto positivo en la comunidad y el ecosistema.</p>
+          <h2>{{ 'Tu Ruta Sostenible' | translate }}</h2>
+          <p>{{ 'Sigue esta guía paso a paso para asegurar que tu visita a Galápagos genere un impacto positivo en la comunidad y el ecosistema.' | translate }}</p>
         </div>
         
         <div class="progreso-dashboard">
@@ -34,15 +35,15 @@ interface EtapaRuta {
             </div>
           </div>
           <div class="progreso-info">
-            <h3>Progreso del Viaje</h3>
-            <p>{{ accionesCompletadas }} de {{ totalAcciones }} acciones completadas</p>
+            <h3>{{ 'Progreso del Viaje' | translate }}</h3>
+            <p>{{ accionesCompletadas }} {{ 'de' | translate }} {{ totalAcciones }} {{ 'acciones completadas' | translate }}</p>
           </div>
         </div>
       </div>
 
       <div class="mensaje-exito pop-in" *ngIf="porcentajeTotal === 100">
-        <h3>🎉 ¡Felicidades! Eres un Turista Responsable</h3>
-        <p>Has completado todas las pautas del Buen Vivir. Estás listo para disfrutar de Galápagos protegiendo su magia.</p>
+        <h3>🎉 {{ '¡Felicidades! Eres un Turista Responsable' | translate }}</h3>
+        <p>{{ 'Has completado todas las pautas del Buen Vivir. Estás listo para disfrutar de Galápagos protegiendo su magia.' | translate }}</p>
       </div>
 
       <div class="timeline-container">
@@ -60,10 +61,10 @@ interface EtapaRuta {
           
           <div class="timeline-card">
             <div class="card-header">
-              <h3>Paso {{ etapa.id }}: {{ etapa.titulo }}</h3>
-              <span class="badge-estado" *ngIf="esEtapaCompletada(etapa)">Completado</span>
+              <h3>{{ 'Paso' | translate }} {{ etapa.id }}: {{ etapa.titulo | translate }}</h3>
+              <span class="badge-estado" *ngIf="esEtapaCompletada(etapa)">{{ 'Completado' | translate }}</span>
             </div>
-            <p class="descripcion">{{ etapa.descripcion }}</p>
+            <p class="descripcion">{{ etapa.descripcion | translate }}</p>
             
             <div class="checklist">
               <label class="check-item" *ngFor="let accion of etapa.acciones">
@@ -71,7 +72,7 @@ interface EtapaRuta {
                        [checked]="accion.completada" 
                        (change)="toggleAccion(accion)">
                 <span class="custom-checkbox"></span>
-                <span class="texto-accion" [ngClass]="{'tachado': accion.completada}">{{ accion.texto }}</span>
+                <span class="texto-accion" [ngClass]="{'tachado': accion.completada}">{{ accion.texto | translate }}</span>
               </label>
             </div>
           </div>
@@ -156,6 +157,7 @@ interface EtapaRuta {
   `]
 })
 export class RutaComponent implements OnInit {
+  private readonly STORAGE_KEY = 'galapago_ruta_progreso';
   etapas: EtapaRuta[] = [
     {
       id: 1,
@@ -217,6 +219,7 @@ export class RutaComponent implements OnInit {
 
   ngOnInit() {
     this.calcularTotalAcciones();
+    this.cargarProgreso();
   }
 
   calcularTotalAcciones() {
@@ -245,5 +248,33 @@ export class RutaComponent implements OnInit {
 
   toggleAccion(accion: Accion) {
     accion.completada = !accion.completada;
+    this.guardarProgreso();
+  }
+
+  private guardarProgreso(): void {
+    const progreso = this.etapas.map(etapa =>
+      etapa.acciones.map(a => a.completada)
+    );
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(progreso));
+  }
+
+  private cargarProgreso(): void {
+    const data = localStorage.getItem(this.STORAGE_KEY);
+    if (data) {
+      try {
+        const progreso: boolean[][] = JSON.parse(data);
+        progreso.forEach((etapaProgreso, i) => {
+          if (this.etapas[i]) {
+            etapaProgreso.forEach((completada, j) => {
+              if (this.etapas[i].acciones[j]) {
+                this.etapas[i].acciones[j].completada = completada;
+              }
+            });
+          }
+        });
+      } catch (e) {
+        localStorage.removeItem(this.STORAGE_KEY);
+      }
+    }
   }
 }

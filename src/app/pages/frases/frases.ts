@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 interface Frase {
   local: string;
@@ -12,20 +13,20 @@ interface Frase {
 @Component({
   selector: 'app-frases',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="frases-wrapper">
       
       <div class="hero-header slide-down">
         <div class="icono-gigante">🗣️</div>
-        <h2>Diccionario Cultural Ecuatoriano</h2>
-        <p>Aprende las expresiones locales que te ayudarán a conectar con la comunidad de Galápagos y enriquecer tu experiencia de viaje.</p>
+        <h2>{{ 'Diccionario Cultural Ecuatoriano' | translate }}</h2>
+        <p>{{ 'Aprende las expresiones locales que te ayudarán a conectar con la comunidad de Galápagos y enriquecer tu experiencia de viaje.' | translate }}</p>
       </div>
 
       <div class="banner-educativo fade-in">
         <div class="banner-contenido">
-          <h3>Diversidad Lingüística</h3>
-          <p>Ecuador es un país multilingüe. Además del español, se hablan lenguas indígenas milenarias como el Kichwa y el Shuar. ¡Nuestra forma de hablar es una mezcla de toda esta riqueza!</p>
+          <h3>{{ 'Diversidad Lingüística' | translate }}</h3>
+          <p>{{ 'Ecuador es un país multilingüe. Además del español, se hablan lenguas indígenas milenarias como el Kichwa y el Shuar. ¡Nuestra forma de hablar es una mezcla de toda esta riqueza!' | translate }}</p>
         </div>
         <div class="idiomas-tags">
           <span class="lang-badge">🇪🇨 Español</span>
@@ -37,7 +38,7 @@ interface Frase {
         <button *ngFor="let cat of categorias" 
                 [ngClass]="{'activo': categoriaActual === cat}"
                 (click)="filtrarPorCategoria(cat)">
-          {{ cat }}
+          {{ cat | translate }}
         </button>
       </div>
 
@@ -47,27 +48,28 @@ interface Frase {
           <div class="frase-header">
             <h3 class="palabra-local">"{{ frase.local }}"</h3>
             <button class="btn-audio" 
+                    [ngClass]="{'reproduciendo': fraseReproduciendo === frase.local}"
                     title="Escuchar pronunciación" 
                     (click)="reproducirAudio(frase.local)">
-              🔊
+              {{ fraseReproduciendo === frase.local ? '🔉' : '🔊' }}
             </button>
           </div>
           
           <div class="frase-body">
-            <p class="significado"><strong>Significado:</strong> {{ frase.significado }}</p>
-            <p class="ejemplo"><em>Ejemplo: "{{ frase.ejemplo }}"</em></p>
+            <p class="significado"><strong>{{ 'Significado:' | translate }}</strong> {{ frase.significado | translate }}</p>
+            <p class="ejemplo"><em>{{ 'Ejemplo:' | translate }} "{{ frase.ejemplo | translate }}"</em></p>
           </div>
           
           <div class="frase-footer">
             <span class="badge-ingles">🌐 {{ frase.ingles }}</span>
-            <span class="badge-categoria">{{ frase.categoria }}</span>
+            <span class="badge-categoria">{{ frase.categoria | translate }}</span>
           </div>
 
         </div>
       </div>
 
       <div class="empty-state" *ngIf="frasesFiltradas.length === 0">
-        <p>No se encontraron frases para esta categoría.</p>
+        <p>{{ 'No se encontraron frases para esta categoría.' | translate }}</p>
       </div>
 
     </div>
@@ -101,6 +103,8 @@ interface Frase {
     .btn-audio { background: #f0fdfa; border: 1px solid #ccfbf1; font-size: 1.2rem; cursor: pointer; border-radius: 50%; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .btn-audio:hover { background: #ccfbf1; transform: scale(1.1); box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15); }
     .btn-audio:active { transform: scale(0.95); }
+    .btn-audio.reproduciendo { background: #0d9488; border-color: #0d9488; animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(13, 148, 136, 0); } 100% { box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); } }
 
     .frase-body { flex-grow: 1; margin-bottom: 1.5rem; }
     .significado { color: #334155; font-size: 1.05rem; margin: 0 0 0.8rem 0; line-height: 1.5; }
@@ -130,6 +134,7 @@ export class FrasesComponent {
   
   categorias: string[] = ['Todas', 'Saludos', 'Cotidianas', 'Turismo', 'Comida'];
   categoriaActual: string = 'Todas';
+  fraseReproduciendo: string | null = null;
 
   frases: Frase[] = [
     { local: '¡Qué bacán!', significado: '¡Qué genial! o ¡Qué increíble!', ingles: 'How awesome!', ejemplo: '¡Qué bacán está el clima hoy para ir a la playa!', categoria: 'Cotidianas' },
@@ -173,6 +178,14 @@ export class FrasesComponent {
       if (spanishVoice) {
         utterance.voice = spanishVoice;
       }
+
+      this.fraseReproduciendo = texto;
+      utterance.onend = () => {
+        this.fraseReproduciendo = null;
+      };
+      utterance.onerror = () => {
+        this.fraseReproduciendo = null;
+      };
 
       window.speechSynthesis.speak(utterance);
     } else {

@@ -17,6 +17,6 @@ export const routes: Routes = [
   { path: 'ruta', component: RutaComponent },
   { path: 'chatbot', component: ChatbotComponent },
   { path: 'frases', component: FrasesComponent },
-  { path: '', redirectTo: '/mapa', pathMatch: 'full' },
-  { path: '**', redirectTo: '/mapa' }
+  { path: '', redirectTo: '/inicio', pathMatch: 'full' },
+  { path: '**', redirectTo: '/inicio' }
 ];

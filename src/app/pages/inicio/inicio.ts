@@ -1,20 +1,21 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   template: `
     <div class="inicio-wrapper">
       
       <div class="hero-section fade-in">
         <div class="hero-content">
           <span class="icono-flotante">🐢</span>
-          <h1>¡Bienvenido a las Islas Galápagos!</h1>
-          <p>Descubre un paraíso natural donde la biodiversidad y la cultura se encuentran</p>
-          <button class="btn-explorar" routerLink="/mapa">Explora la Experiencia ➔</button>
+          <h1>{{ '¡Bienvenido a las Islas Galápagos!' | translate }}</h1>
+          <p>{{ 'Descubre un paraíso natural donde la biodiversidad y la cultura se encuentran' | translate }}</p>
+          <button class="btn-explorar" routerLink="/mapa">{{ 'Explora la Experiencia ➔' | translate }}</button>
         </div>
       </div>
 
@@ -23,32 +24,32 @@ import { RouterModule } from '@angular/router';
         <div class="modulo-card" routerLink="/mapa">
           <div class="modulo-icon bg-teal">🗺️</div>
           <div class="modulo-texto">
-            <h3>Mapa Interactivo</h3>
-            <p>Explora cada isla y descubre su cultura, gastronomía y fauna única.</p>
+            <h3>{{ 'Mapa Interactivo' | translate }}</h3>
+            <p>{{ 'Explora cada isla y descubre su cultura, gastronomía y fauna única.' | translate }}</p>
           </div>
         </div>
 
         <div class="modulo-card" routerLink="/respeto">
           <div class="modulo-icon bg-pink">📖</div>
           <div class="modulo-texto">
-            <h3>Aprende la Cultura</h3>
-            <p>Conoce las costumbres locales y cómo ser un visitante respetuoso.</p>
+            <h3>{{ 'Aprende la Cultura' | translate }}</h3>
+            <p>{{ 'Conoce las costumbres locales y cómo ser un visitante respetuoso.' | translate }}</p>
           </div>
         </div>
 
         <div class="modulo-card" routerLink="/simulador">
           <div class="modulo-icon bg-blue">🎮</div>
           <div class="modulo-texto">
-            <h3>Simulador</h3>
-            <p>Pon a prueba tus conocimientos sobre turismo responsable.</p>
+            <h3>{{ 'Simulador' | translate }}</h3>
+            <p>{{ 'Pon a prueba tus conocimientos sobre turismo responsable.' | translate }}</p>
           </div>
         </div>
 
         <div class="modulo-card" routerLink="/frases">
           <div class="modulo-icon bg-purple">🗣️</div>
           <div class="modulo-texto">
-            <h3>Frases Locales</h3>
-            <p>Aprende expresiones ecuatorianas para conectar con la comunidad.</p>
+            <h3>{{ 'Frases Locales' | translate }}</h3>
+            <p>{{ 'Aprende expresiones ecuatorianas para conectar con la comunidad.' | translate }}</p>
           </div>
         </div>
 

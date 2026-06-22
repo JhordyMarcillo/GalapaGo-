@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 interface Mensaje {
   emisor: 'bot' | 'user';
@@ -11,15 +12,15 @@ interface Mensaje {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   providers: [DatePipe],
   template: `
     <div class="chatbot-wrapper">
       
       <div class="hero-header slide-down">
         <div class="bot-avatar-gigante">🐢</div>
-        <h2>Asistente Virtual GalapaGo!</h2>
-        <p>Resuelve tus dudas sobre turismo responsable, normas del Buen Vivir, fauna y gastronomía en tiempo real.</p>
+        <h2>{{ 'Asistente Virtual GalapaGo!' | translate }}</h2>
+        <p>{{ 'Resuelve tus dudas sobre turismo responsable, normas del Buen Vivir, fauna y gastronomía en tiempo real.' | translate }}</p>
       </div>
 
       <div class="chat-container fade-in">
@@ -29,7 +30,7 @@ interface Mensaje {
                   *ngFor="let opt of opciones" 
                   [disabled]="isTyping"
                   (click)="enviarOpcion(opt)">
-            {{ opt }}
+            {{ opt | translate }}
           </button>
         </div>
 
@@ -40,7 +41,8 @@ interface Mensaje {
             
             <div class="burbuja-wrapper">
               <div class="burbuja" [ngClass]="msg.emisor">
-                <p>{{ msg.texto }}</p>
+                <p *ngIf="msg.emisor === 'user'">{{ msg.texto }}</p>
+                <p *ngIf="msg.emisor === 'bot'">{{ msg.texto | translate }}</p>
               </div>
               <span class="hora">{{ msg.hora }}</span>
             </div>
@@ -58,7 +60,7 @@ interface Mensaje {
         <div class="chat-input-area">
           <input type="text" 
                  [(ngModel)]="mensajeActual" 
-                 placeholder="Escribe tu pregunta aquí..." 
+                 [placeholder]="'Escribe tu pregunta aquí...' | translate" 
                  [disabled]="isTyping"
                  (keyup.enter)="enviarMensaje()">
           
@@ -131,11 +133,11 @@ interface Mensaje {
 export class ChatbotComponent implements AfterViewChecked {
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
-  opciones = ['🐾 Fauna Mágica', '📜 Reglas del Parque', '🍽️ Comida Típica', '🏛️ Monumentos', '🎭 Cultura Local', '💡 Qué empacar'];
+  opciones = ['🐾 Fauna Mágica', '📜 Reglas del Parque', '🍽️ Comida Típica', '🏛️ Monumentos', '🎭 Cultura Local', '🌐 Traductor'];
   
   mensajes: Mensaje[] = [];
   mensajeActual = '';
-  isTyping = false; // Bandera de seguridad principal
+  isTyping = false; 
 
   constructor(private datePipe: DatePipe) {
     this.mensajes.push({ 
@@ -164,43 +166,61 @@ export class ChatbotComponent implements AfterViewChecked {
     this.enviarMensaje();
   }
 
-  enviarMensaje() {
+  async enviarMensaje() {
     if (this.isTyping || !this.mensajeActual.trim()) return;
 
     const consultaUsuario = this.mensajeActual;
     this.mensajes.push({ emisor: 'user', texto: consultaUsuario, hora: this.obtenerHoraActual() });
     this.mensajeActual = '';
     this.isTyping = true;
+    this.scrollToBottom();
 
-    setTimeout(() => {
-      const respuesta = this.generarRespuestaBot(consultaUsuario.toLowerCase());
-      
-      this.isTyping = false;
-      this.mensajes.push({ emisor: 'bot', texto: respuesta, hora: this.obtenerHoraActual() });
-    }, 1500);
+    this.isTyping = false;
+    this.mensajes.push({ emisor: 'bot', texto: this.obtenerRespuestaBot(consultaUsuario), hora: this.obtenerHoraActual() });
+    this.scrollToBottom();
   }
 
-  generarRespuestaBot(consulta: string): string {
-    if (consulta.includes('fauna') || consulta.includes('animal') || consulta.includes('tortuga') || consulta.includes('lobo') || consulta.includes('iguana')) {
-      return 'En Galápagos encontrarás especies endémicas increíbles. La regla de oro es: mantén siempre una distancia mínima de 2 metros con cualquier animal y por ningún motivo intentes alimentarlos o tocarlos.';
-    } 
-    else if (consulta.includes('regla') || consulta.includes('norma') || consulta.includes('prohibido') || consulta.includes('basura')) {
-      return 'El Buen Vivir exige respetar el entorno. No introduzcas alimentos externos, usa solo protector solar biodegradable, llévate toda tu basura de regreso y no extraigas arena, rocas ni conchas de las playas.';
+  obtenerRespuestaBot(mensaje: string): string {
+    const texto = mensaje.toLowerCase();
+    
+    if (texto.match(/hola|buenos|buenas|saludos|que tal|q tal|holi/)) {
+      return '¡Hola! Qué gusto saludarte. Soy GalapaBot, tu guía interactivo. ¿Te gustaría saber sobre nuestras tortugas, playas, reglas o quizás algo de comida típica?';
     }
-    else if (consulta.includes('comida') || consulta.includes('gastronomia') || consulta.includes('comer') || consulta.includes('plato')) {
-      return '¡La comida es deliciosa! Te recomiendo probar el Ceviche de Canchalagua en San Cristóbal, o un rico Encebollado de pescado en Santa Cruz. Recuerda siempre consumir en los mercados locales para apoyar a la comunidad.';
+    else if (texto.match(/que hay|que hacer|turismo|atracciones|visitar|lugares|islas|playa/)) {
+      return 'Galápagos es un paraíso natural de 13 islas principales. Puedes hacer snorkeling con tortugas marinas, visitar volcanes como el Sierra Negra, relajarte en playas de arena blanca como Tortuga Bay, y observar animales prehistóricos. ¡Todo mientras respetamos su ecosistema!';
     }
-    else if (consulta.includes('monumento') || consulta.includes('lugar') || consulta.includes('visitar') || consulta.includes('isla')) {
-      return 'Tienes lugares fantásticos como la Estación Científica Charles Darwin en Santa Cruz, el Muro de las Lágrimas en Isabela, o el León Dormido (Kicker Rock) en San Cristóbal.';
+    else if (texto.match(/fauna|animal|tortuga|iguana|pinguino|lobo|piquero|ave|pájaro/)) {
+      return 'Nuestra fauna es única en el mundo. Aquí encontrarás a las famosas Tortugas Gigantes (¡pueden vivir más de 100 años!), Iguanas Marinas que bucean, Piqueros de Patas Azules y adorables Lobos Marinos. La regla de oro es: mantén al menos 2 metros de distancia y NUNCA los alimentes.';
     }
-    else if (consulta.includes('cultura') || consulta.includes('frase') || consulta.includes('saludo')) {
-      return 'Los locales son muy amables. Puedes decir "¡Qué bacán!" para expresar que algo es genial, o llamar "Ñaño" a un buen amigo. Visita la sección de Frases Locales para escuchar la pronunciación.';
+    else if (texto.match(/regla|norma|prohibido|parque|cuidado|responsable|distancia|basura/)) {
+      return 'El Parque Nacional Galápagos tiene normas estrictas: 1. Mantén 2 metros de distancia con la fauna. 2. No saques elementos naturales (arena, conchas, rocas). 3. Camina siempre por los senderos autorizados. 4. Llévate toda tu basura de vuelta a la ciudad.';
     }
-    else if (consulta.includes('empacar') || consulta.includes('ropa') || consulta.includes('llevar')) {
-      return 'Trae ropa ligera, zapatos cómodos para caminatas sobre rocas volcánicas, tu propia botella de agua reutilizable (para no generar plástico) y protector solar amigable con los arrecifes.';
+    else if (texto.match(/comida|gastronom|comer|plato|restaurante|hambre|desayuno|almuerzo/)) {
+      return '¡La comida aquí es deliciosa! Tienes que probar el Encebollado de pescado, los Bolones de verde, y los mariscos al carbón. Te recomiendo visitar los quioscos locales en Puerto Ayora o Puerto Baquerizo Moreno para disfrutar de comida auténtica y apoyar a la comunidad.';
+    }
+    else if (texto.match(/clima|tiempo|calor|frio|lluvia|mes|cuando viajar|mejor epoca/)) {
+      return 'Tenemos dos temporadas: de Enero a Mayo es la época cálida (ideal para playa y snorkeling, con lluvias esporádicas). De Junio a Diciembre es la época seca y fría (corriente de Humboldt), ¡perfecta para el buceo y observar vida marina muy activa!';
+    }
+    else if (texto.match(/traductor|ingles|frase|palabra|significa|diccionario|hablar/)) {
+      return 'En Ecuador usamos frases muy interesantes. Por ejemplo, decimos "¡Qué bacán!" para decir que algo es genial, o "Ñaño/a" para referirnos a un amigo muy cercano. Usa nuestro módulo de "Frases Locales" para aprender muchas más.';
+    }
+    else if (texto.match(/precio|costo|vuelo|llegar|dinero|pagar|tributo/)) {
+      return 'Para llegar debes tomar un vuelo desde Ecuador continental. Al llegar, se debe abonar la Tarjeta de Control de Tránsito (TCT) y el tributo de ingreso al Parque Nacional. Estos fondos son vitales para la conservación de nuestro archipiélago.';
+    }
+    else if (texto.match(/darwin|historia|evolucion|origen|charles/)) {
+      return 'Charles Darwin nos visitó en 1835. Sus observaciones de pinzones y tortugas fueron fundamentales para su Teoría de la Evolución. ¡Te invito a visitar la Estación Científica Charles Darwin en la Isla Santa Cruz para aprender más!';
+    }
+    else if (texto.match(/adios|chao|gracias|hasta luego|nos vemos|bye/)) {
+      return '¡Con mucho gusto! Espero haberte ayudado. Disfruta tu estadía en las "Islas Encantadas" y recuerda ser siempre un viajero responsable. ¡Chao!';
     }
     else {
-      return 'Es una excelente pregunta. Te recomiendo visitar nuestro Mapa Interactivo o realizar la Ruta del Buen Vivir en el menú superior para descubrir todos los detalles precisos sobre tu consulta.';
+      const fallbacks = [
+        '¡Qué pregunta tan interesante! Galápagos tiene tanto por descubrir. Podría contarte sobre nuestros animales endémicos, las reglas para visitar el parque o nuestra deliciosa comida local. ¿Qué prefieres?',
+        'No estoy seguro de tener la respuesta exacta a eso. Pero te puedo hablar de las majestuosas Tortugas Gigantes, las rutas turísticas o cómo puedes ayudarnos a conservar las islas.',
+        'Mi conocimiento se enfoca en el turismo responsable y la vida en el archipiélago. ¿Te gustaría saber qué lugares visitar o quizás conocer algunas frases ecuatorianas?',
+        '¡Vaya, eso suena genial! Si tienes dudas sobre qué hacer en Santa Cruz, Isabela o San Cristóbal, o cómo interactuar con nuestra fauna, ¡solo pregúntame!'
+      ];
+      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
     }
   }
 }

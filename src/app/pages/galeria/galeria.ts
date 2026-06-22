@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 
 interface RecursoGaleria {
   titulo: string;
@@ -11,27 +12,27 @@ interface RecursoGaleria {
 @Component({
   selector: 'app-galeria',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
     <div class="galeria-wrapper">
       
       <div class="header-text text-center">
-        <h2>Galería Visual de Galápagos</h2>
-        <p>Sumérgete en la belleza natural y cultural del archipiélago.</p>
+        <h2>{{ 'Galería Visual de Galápagos' | translate }}</h2>
+        <p>{{ 'Sumérgete en la belleza natural y cultural del archipiélago.' | translate }}</p>
       </div>
 
       <div class="grid-galeria">
         <div class="tarjeta-premium" *ngFor="let item of recursos" (click)="abrirModal(item)">
           <div class="imagen-contenedor">
             <img [src]="item.imagenes[0]" [alt]="item.titulo" loading="lazy">
-            <span class="badge-etiqueta">{{ item.etiqueta }}</span>
+            <span class="badge-etiqueta">{{ item.etiqueta | translate }}</span>
             <div class="capa-hover">
-              <span class="icono-ampliar">⤢ Ver Galería</span>
+              <span class="icono-ampliar">⤢ {{ 'Ver Galería' | translate }}</span>
             </div>
           </div>
           <div class="contenido-tarjeta">
-            <h3>{{ item.titulo }}</h3>
-            <p>{{ item.descripcion }}</p>
+            <h3>{{ item.titulo | translate }}</h3>
+            <p>{{ item.descripcion | translate }}</p>
           </div>
         </div>
       </div>
@@ -57,9 +58,9 @@ interface RecursoGaleria {
           </div>
 
           <div class="modal-info">
-            <span class="badge-etiqueta-modal">{{ itemActivo.etiqueta }}</span>
-            <h2>{{ itemActivo.titulo }}</h2>
-            <p>{{ itemActivo.descripcion }}</p>
+            <span class="badge-etiqueta-modal">{{ itemActivo.etiqueta | translate }}</span>
+            <h2>{{ itemActivo.titulo | translate }}</h2>
+            <p>{{ itemActivo.descripcion | translate }}</p>
           </div>
 
         </div>
@@ -182,7 +183,7 @@ export class GaleriaComponent {
     {
       titulo: 'Piqueros de Nazca',
       etiqueta: 'Vida Silvestre',
-      descripcion: 'Animales extremadamente sociales, juguetones y curiosos. Es muy común encontrarlos descansando en las playas, malecones y muelles compartiendo el espacio con los locales.',
+      descripcion: 'Aves marinas de gran tamaño con plumaje blanco y negro. Se distinguen por su pico naranja y su antifaz oscuro. Anidan en colonias en los acantilados de las islas más remotas del archipiélago.',
       imagenes: [
         'https://datazone.darwinfoundation.org/images/checklist/NazcaBoobyHembraMachoDAnchundiaIslaDaphneMajor.jpg',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3I8Tq91oWQAF3YULd0AAAOMA0XZl6TKgjWw&s'
@@ -191,7 +192,7 @@ export class GaleriaComponent {
     {
       titulo: 'Albatros Ondeante',
       etiqueta: 'Vida Silvestre',
-      descripcion: 'Animales extremadamente sociales, juguetones y curiosos. Es muy común encontrarlos descansando en las playas, malecones y muelles compartiendo el espacio con los locales.',
+      descripcion: 'El ave más grande de Galápagos, con una envergadura de hasta 2.5 metros. Famoso por su elaborada danza de cortejo, anida exclusivamente en la Isla Española entre abril y diciembre.',
       imagenes: [
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJFeqAT9qovtStBclV7TnRg-LFmbieuwGufg&s',
         'https://thumbs.dreamstime.com/b/albatross-phoebastria-irrorata-ondeando-en-las-gal%C3%A1pagos-un-ondeado-volando-208543476.jpg'
