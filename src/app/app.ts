@@ -28,6 +28,7 @@ import { TranslationService, Language } from './core/services/translation.servic
           <a routerLink="/simulador" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Simulador' | translate }}</a>
           <a routerLink="/galeria" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Galería' | translate }}</a>
           <a routerLink="/ruta" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Ruta del Buen Vivir' | translate }}</a>
+          <a routerLink="/reviews" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Opiniones' | translate }}</a>
           <a routerLink="/chatbot" routerLinkActive="active" (click)="cerrarMenu()">{{ 'Asistente' | translate }}</a>
           
           <div class="nav-actions-mobile">
@@ -66,6 +67,7 @@ import { TranslationService, Language } from './core/services/translation.servic
           <a routerLink="/mapa">Mapa Interactivo</a>
           <a routerLink="/respeto">Guía de Normativas</a>
           <a routerLink="/simulador">Simulador de Concienciación</a>
+          <a routerLink="/reviews">Opiniones de Viajeros</a>
         </div>
 
         <div class="footer-seccion academico">
@@ -89,15 +91,15 @@ import { TranslationService, Language } from './core/services/translation.servic
 
     /* NAVBAR */
     .navbar { position: fixed; top: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.05); z-index: 2000; border-bottom: 1px solid #f1f5f9; }
-    .nav-container { max-width: 1300px; margin: 0 auto; padding: 0 1.5rem; height: 70px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-container { max-width: 1440px; margin: 0 auto; padding: 0 1rem; height: 70px; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
     
     .brand-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
     .logo-icon { font-size: 2rem; line-height: 1; }
     .logo-text { font-size: 1.5rem; font-weight: 800; color: #0f766e; letter-spacing: -0.5px; }
 
     /* Links de Navegación */
-    .nav-links { display: flex; gap: 0.5rem; align-items: center; }
-    .nav-links a { text-decoration: none; color: #475569; font-weight: 600; font-size: 0.95rem; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.2s ease; }
+    .nav-links { display: flex; gap: 0.25rem; align-items: center; min-width: 0; }
+    .nav-links a { text-decoration: none; color: #475569; font-weight: 600; font-size: 0.88rem; padding: 0.5rem 0.65rem; border-radius: 8px; transition: all 0.2s ease; white-space: nowrap; }
     .nav-links a:hover { background: #f0fdfa; color: #0d9488; }
     .nav-links a.active { background: #0d9488; color: white; box-shadow: 0 4px 10px rgba(13, 148, 136, 0.2); }
 
@@ -133,7 +135,7 @@ import { TranslationService, Language } from './core/services/translation.servic
     .footer-bottom p { margin: 0; }
 
     /* RESPONSIVE DESIGN */
-    @media (max-width: 1024px) {
+    @media (max-width: 1280px) {
       .nav-links { display: none; position: fixed; top: 70px; left: 0; width: 100%; background: white; flex-direction: column; padding: 1.5rem; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-top: 1px solid #f1f5f9; }
       .nav-links.abierto { display: flex; }
       .nav-links a { width: 100%; text-align: center; padding: 1rem; font-size: 1.1rem; }

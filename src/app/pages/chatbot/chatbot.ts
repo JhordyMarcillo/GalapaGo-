@@ -1,7 +1,8 @@
-import { Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../core/pipes/translate.pipe';
+import { GeminiService } from '../../core/services/gemini.service';
 
 interface Mensaje {
   emisor: 'bot' | 'user';
@@ -139,7 +140,11 @@ export class ChatbotComponent implements AfterViewChecked {
   mensajeActual = '';
   isTyping = false; 
 
-  constructor(private datePipe: DatePipe) {
+  constructor(
+    private datePipe: DatePipe,
+    private geminiService: GeminiService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.mensajes.push({ 
       emisor: 'bot', 
       texto: '¡Hola! Soy GalapaBot 🐢. Estoy aquí para guiarte en tu aventura promoviendo el Buen Vivir. ¿Sobre qué te gustaría aprender hoy?', 
@@ -166,7 +171,7 @@ export class ChatbotComponent implements AfterViewChecked {
     this.enviarMensaje();
   }
 
-  async enviarMensaje() {
+  enviarMensaje() {
     if (this.isTyping || !this.mensajeActual.trim()) return;
 
     const consultaUsuario = this.mensajeActual;
@@ -175,52 +180,16 @@ export class ChatbotComponent implements AfterViewChecked {
     this.isTyping = true;
     this.scrollToBottom();
 
-    this.isTyping = false;
-    this.mensajes.push({ emisor: 'bot', texto: this.obtenerRespuestaBot(consultaUsuario), hora: this.obtenerHoraActual() });
-    this.scrollToBottom();
-  }
-
-  obtenerRespuestaBot(mensaje: string): string {
-    const texto = mensaje.toLowerCase();
-    
-    if (texto.match(/hola|buenos|buenas|saludos|que tal|q tal|holi/)) {
-      return '¡Hola! Qué gusto saludarte. Soy GalapaBot, tu guía interactivo. ¿Te gustaría saber sobre nuestras tortugas, playas, reglas o quizás algo de comida típica?';
-    }
-    else if (texto.match(/que hay|que hacer|turismo|atracciones|visitar|lugares|islas|playa/)) {
-      return 'Galápagos es un paraíso natural de 13 islas principales. Puedes hacer snorkeling con tortugas marinas, visitar volcanes como el Sierra Negra, relajarte en playas de arena blanca como Tortuga Bay, y observar animales prehistóricos. ¡Todo mientras respetamos su ecosistema!';
-    }
-    else if (texto.match(/fauna|animal|tortuga|iguana|pinguino|lobo|piquero|ave|pájaro/)) {
-      return 'Nuestra fauna es única en el mundo. Aquí encontrarás a las famosas Tortugas Gigantes (¡pueden vivir más de 100 años!), Iguanas Marinas que bucean, Piqueros de Patas Azules y adorables Lobos Marinos. La regla de oro es: mantén al menos 2 metros de distancia y NUNCA los alimentes.';
-    }
-    else if (texto.match(/regla|norma|prohibido|parque|cuidado|responsable|distancia|basura/)) {
-      return 'El Parque Nacional Galápagos tiene normas estrictas: 1. Mantén 2 metros de distancia con la fauna. 2. No saques elementos naturales (arena, conchas, rocas). 3. Camina siempre por los senderos autorizados. 4. Llévate toda tu basura de vuelta a la ciudad.';
-    }
-    else if (texto.match(/comida|gastronom|comer|plato|restaurante|hambre|desayuno|almuerzo/)) {
-      return '¡La comida aquí es deliciosa! Tienes que probar el Encebollado de pescado, los Bolones de verde, y los mariscos al carbón. Te recomiendo visitar los quioscos locales en Puerto Ayora o Puerto Baquerizo Moreno para disfrutar de comida auténtica y apoyar a la comunidad.';
-    }
-    else if (texto.match(/clima|tiempo|calor|frio|lluvia|mes|cuando viajar|mejor epoca/)) {
-      return 'Tenemos dos temporadas: de Enero a Mayo es la época cálida (ideal para playa y snorkeling, con lluvias esporádicas). De Junio a Diciembre es la época seca y fría (corriente de Humboldt), ¡perfecta para el buceo y observar vida marina muy activa!';
-    }
-    else if (texto.match(/traductor|ingles|frase|palabra|significa|diccionario|hablar/)) {
-      return 'En Ecuador usamos frases muy interesantes. Por ejemplo, decimos "¡Qué bacán!" para decir que algo es genial, o "Ñaño/a" para referirnos a un amigo muy cercano. Usa nuestro módulo de "Frases Locales" para aprender muchas más.';
-    }
-    else if (texto.match(/precio|costo|vuelo|llegar|dinero|pagar|tributo/)) {
-      return 'Para llegar debes tomar un vuelo desde Ecuador continental. Al llegar, se debe abonar la Tarjeta de Control de Tránsito (TCT) y el tributo de ingreso al Parque Nacional. Estos fondos son vitales para la conservación de nuestro archipiélago.';
-    }
-    else if (texto.match(/darwin|historia|evolucion|origen|charles/)) {
-      return 'Charles Darwin nos visitó en 1835. Sus observaciones de pinzones y tortugas fueron fundamentales para su Teoría de la Evolución. ¡Te invito a visitar la Estación Científica Charles Darwin en la Isla Santa Cruz para aprender más!';
-    }
-    else if (texto.match(/adios|chao|gracias|hasta luego|nos vemos|bye/)) {
-      return '¡Con mucho gusto! Espero haberte ayudado. Disfruta tu estadía en las "Islas Encantadas" y recuerda ser siempre un viajero responsable. ¡Chao!';
-    }
-    else {
-      const fallbacks = [
-        '¡Qué pregunta tan interesante! Galápagos tiene tanto por descubrir. Podría contarte sobre nuestros animales endémicos, las reglas para visitar el parque o nuestra deliciosa comida local. ¿Qué prefieres?',
-        'No estoy seguro de tener la respuesta exacta a eso. Pero te puedo hablar de las majestuosas Tortugas Gigantes, las rutas turísticas o cómo puedes ayudarnos a conservar las islas.',
-        'Mi conocimiento se enfoca en el turismo responsable y la vida en el archipiélago. ¿Te gustaría saber qué lugares visitar o quizás conocer algunas frases ecuatorianas?',
-        '¡Vaya, eso suena genial! Si tienes dudas sobre qué hacer en Santa Cruz, Isabela o San Cristóbal, o cómo interactuar con nuestra fauna, ¡solo pregúntame!'
-      ];
-      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
-    }
+    globalThis.setTimeout(() => {
+      const respuesta = this.geminiService.generarRespuestaLocal(consultaUsuario);
+      this.mensajes.push({
+        emisor: 'bot',
+        texto: respuesta,
+        hora: this.obtenerHoraActual()
+      });
+      this.isTyping = false;
+      this.cdr.detectChanges();
+      this.scrollToBottom();
+    }, 600);
   }
 }

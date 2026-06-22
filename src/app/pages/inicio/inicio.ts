@@ -53,6 +53,14 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
           </div>
         </div>
 
+        <div class="modulo-card" routerLink="/reviews">
+          <div class="modulo-icon bg-amber">⭐</div>
+          <div class="modulo-texto">
+            <h3>{{ 'Opiniones' | translate }}</h3>
+            <p>{{ 'Comparte reseñas sobre comida, hotelería, sectores y experiencias en Galápagos.' | translate }}</p>
+          </div>
+        </div>
+
       </div>
     </div>
   `,
@@ -81,6 +89,7 @@ import { TranslatePipe } from '../../core/pipes/translate.pipe';
     .bg-pink { background: #fce7f3; color: #be185d; }
     .bg-blue { background: #dbeafe; color: #1d4ed8; }
     .bg-purple { background: #f3e8ff; color: #7e22ce; }
+    .bg-amber { background: #fef3c7; color: #b45309; }
 
     .modulo-texto h3 { margin: 0 0 0.4rem 0; color: #1e293b; font-size: 1.2rem; }
     .modulo-texto p { margin: 0; color: #64748b; font-size: 0.95rem; line-height: 1.4; }

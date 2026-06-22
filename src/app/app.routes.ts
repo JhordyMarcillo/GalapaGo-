@@ -7,6 +7,7 @@ import { RutaComponent } from './pages/ruta/ruta';
 import { ChatbotComponent } from './pages/chatbot/chatbot';
 import { FrasesComponent } from './pages/frases/frases';
 import { InicioComponent } from './pages/inicio/inicio';
+import { ReviewsComponent } from './pages/reviews/reviews';
 
 export const routes: Routes = [
   { path: 'inicio', component: InicioComponent },
@@ -17,6 +18,7 @@ export const routes: Routes = [
   { path: 'ruta', component: RutaComponent },
   { path: 'chatbot', component: ChatbotComponent },
   { path: 'frases', component: FrasesComponent },
+  { path: 'reviews', component: ReviewsComponent },
   { path: '', redirectTo: '/inicio', pathMatch: 'full' },
   { path: '**', redirectTo: '/inicio' }
 ];
